@@ -34,11 +34,9 @@ class AVRSend(Thread):
 
     def run(self):
         while 1:
-            time.sleep(0.1)
-            if not self.q_to_receiver.empty():
-                msg = self.q_to_receiver.get()
-                log.info("  To receiver <-- {}".format(msg))
-                self.sock.send(msg.encode())
+            msg = self.q_to_receiver.get()
+            log.info("  To receiver <-- {}".format(msg))
+            self.sock.send(msg.encode())
 
 class AVRSocket(Thread):
     def __init__(self, receiver_host, q_to_receiver, q_from_receiver):
@@ -105,12 +103,10 @@ class DenonReceiver(object):
         self.client.loop_start()
 
         while 1:
-            time.sleep(0.1)
-            if not self.q_from_receiver.empty():
-                msg = self.q_from_receiver.get()
-                payload = msg
-                self.client.publish("{}/status".format(self.mqtt_topic), 
-                    payload=payload, qos=0, retain=False)
+            msg = self.q_from_receiver.get()
+            payload = msg
+            self.client.publish("{}/status".format(self.mqtt_topic), 
+                payload=payload, qos=0, retain=False)
 
 if __name__ == "__main__":
     log.setLevel(logging.DEBUG)
